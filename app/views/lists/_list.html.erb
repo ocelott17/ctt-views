@@ -1,0 +1,59 @@
+<div class="c-list">
+  <!-- List header -->
+  <div class="c-list__header">
+    <% model.ctt_list_fields.each_with_index do |field, index| %>
+        <div class="c-list__header-item">
+            <span><%= field[:label] %></span>
+
+            <%# Add filters if scope and order options are declared %>
+            <% if field[:scope] && field[:order_options].present? %>
+                <% order_options = field[:order_options] || [] %>
+
+                <% current_order = params[:current_order].to_i %>
+                <% current_order + 1 > order_options.length ? next_order = 0 : next_order = current_order + 1 %>
+                <% order_labels = field[:order_labels] || order_options %>
+                <% next_order_label = order_labels[current_order % order_labels.length] %>
+
+                <% filter_params = { scope: field[:scope], order: order_options[current_order], order_options: order_options, current_order: next_order } %>
+
+                <%= link_to send(url.to_s, filter_params),
+                    data: { turbo: data_turbo, turbo_frame: data_turbo_frame },
+                    class: 'c-list__filter' do %>
+                    <span><%= next_order_label %></span>
+                <% end %>
+            <% end %>
+        </div>
+    <% end %>
+  </div>
+
+  <!-- List body -->
+  <div class="c-list__body">
+    <% collection.each do |record| %>
+        <div class="c-list__row">
+            <% model.ctt_list_fields.each do |field| %>
+            <% if field[:name] == :actions && actions.present? %>
+                <div class="c-list__item c-list__actions">
+                <%# Item actions %>
+                <% actions.each do |action| %>
+                    <% if action[:show_if].nil? || action[:show_if] %>
+                        <% if action[:method] == :get %>
+                            <%= link_to action[:text], send(action[:path], record), class: 'c-button ' + (action[:class] || '') %>
+                        <% else %>
+                            <%= button_to action[:text], send(action[:path], record),
+                            method: action[:method],
+                            class: 'c-button ' + (action[:class] || ''),
+                            data: { turbo_frame: action[:data_turbo_frame], turbo: action[:data_turbo] } %>
+                        <% end %>
+                    <% end %>
+                <% end %>
+                </div>
+            <% else %>
+                <div class="c-list__item">
+                <%= record.send(field[:name]) %>
+                </div>
+            <% end %>
+            <% end %>
+        </div>
+    <% end %>
+  </div>
+</div>

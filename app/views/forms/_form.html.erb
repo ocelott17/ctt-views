@@ -7,8 +7,8 @@
       }.compact
     } do |f| %>
 
-    <%# Iterate through each card defined in the model's ctt_fields configuration %>
-    <% model.class.ctt_fields.each do |card| %>
+    <%# Iterate through each card defined in the model's ctt_form_fields configuration %>
+    <% model.class.ctt_form_fields.each do |card| %>
         <div class="c-form__card">
         
         <%# Render the card title if one is specified %>
@@ -51,6 +51,6 @@
     <div class="c-form__actions">
         <%# Render the actions section by including the reusable _actions partial %>
         <%= render 'forms/actions', actions: actions %>
-        <%= f.submit submit_label, class: 'c-form__action'%>
+        <%= f.submit submit_label, class: "c-form__action #{submit_class}"%>
     </div>
 <% end %>

@@ -2,7 +2,9 @@
 
 Ctt-views offers some useful partials to help you create forms and lists in your rails app.
 
-## Installation
+THIS GEM DOES NOT PROVIDE CSS STYLES FOR THE VIEWS, IT ONLY ASSIGNS CSS CLASSES
+
+# Installation
 
 Install the gem and add to the application's Gemfile by executing:
 
@@ -12,16 +14,89 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
     $ gem install ctt-views
 
-## Usage
+# Forms
 
-## TO DO
+## Creation
 
-## Development
+You have to specify in the model.rb file the fields you want to display in your form, g.e.:
 
-After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+ctt_form_fields [
+    { 
+        title: 'Create new User',
+        fields: {
+            first_name: { required: true },
+            last_name: { required: false },
+            email: { required: true }
+            role: { hidden: true, value: 'admin' },
+        } 
+    }
+]
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+Each hash you write into ctt_fields will print a <div class="c-form__card"></div>.
+This div will group all the fields you specify inside of the hash.
+Each card can have a separate title. It's empty by default.
+So if you want to create more cards, you must write something like this:
 
-## Contributing
+ctt_form_fields [
+    # First card
+    { 
+        title: 'General informations',
+        fields: {
+            first_name: { required: true },
+            last_name: { required: true }
+        } 
+    }
+    # Second card
+    {
+        title: 'Email',
+        fields: {
+            email: { required: true }
+            role: { hidden: true, value: 'admin' },
+        }
+    }
+]
+
+Then you can create a form from a view by using:
+
+<%= ctt_form(model, url: url, method: method ) %>
+
+## Options
+
+### Required
+
+// path the form will submit to
+url: url || url_for(record)
+// model you're gonna use in the form
+model: record
+// form method
+method: method || (record.persisted? ? :patch : :post) 
+
+### Optional
+
+// optional actions that will appear near the submit
+actions: actions
+    -- all action options:
+    - show_if: boolean
+    - label: string
+    - path: path
+    - method: method
+    - class: string
+    - turbo: boolean
+    - turbo_frame: string
+    - turbo_prefetch: boolean
+    - turbo_confirm: string
+
+// submit options
+submit_label: submit_label
+submit_class: submit_class
+
+// turbo options
+data_turbo: boolean
+data_turbo_prefetch: boolean
+data_turbo_frame: string
+data_turbo_confirm: string
+
+
+# Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/ctt-views.
