@@ -1,0 +1,56 @@
+<%= form_for model, url: url, method: method, html: {
+      data: {
+        turbo: data_turbo,
+        turbo_prefetch: data_turbo_prefetch,
+        turbo_frame: data_turbo_frame,
+        turbo_confirm: data_turbo_confirm
+      }.compact
+    } do |f| %>
+
+    <%# Iterate through each card defined in the model's ctt_fields configuration %>
+    <% model.class.ctt_fields.each do |card| %>
+        <div class="c-form__card">
+        
+        <%# Render the card title if one is specified %>
+        <% if card[:title].present? %>
+            <h3><%= card[:title] %></h3>
+        <% end %>
+
+        <%# Iterate through each field in the card %>
+        <% card[:fields].each do |field, options| %>
+
+            <%# Check if the field is hidden and render a hidden input if so %>
+            <% if options[:hidden] %>
+            <%= f.hidden_field field, value: options[:value] %>
+
+            <% elsif options[:select] %>
+            <%# Render a select input if the field has select options %>
+            <%= f.select field, options[:options], { include_blank: !options[:required] }, class: options[:class] %>
+
+            <% else %>
+            <%# Detect field type based on database column and render appropriate input %>
+            <% input_type = model.class.columns_hash[field.to_s].type %>
+            <div class="field">
+                <%= f.label field, options[:label] %>
+                <% case input_type %>
+                <% when :string, :text %>
+                <%= f.text_field field, required: options[:required], class: options[:class], value: model.send(field) %>
+                <% when :integer, :float, :decimal %>
+                <%= f.number_field field, required: options[:required], class: options[:class], value: model.send(field) %>
+                <% when :date %>
+                <%= f.date_field field, required: options[:required], class: options[:class], value: model.send(field) %>
+                <% when :boolean %>
+                <%= f.check_box field, required: options[:required], class: options[:class] %>
+                <% end %>
+            </div>
+            <% end %>
+        <% end %>
+        </div>
+    <% end %>
+
+    <div class="c-form__actions">
+        <%# Render the actions section by including the reusable _actions partial %>
+        <%= render 'forms/actions', actions: actions %>
+        <%= f.submit submit_label, class: 'c-form__action'%>
+    </div>
+<% end %>

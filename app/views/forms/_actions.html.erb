@@ -1,0 +1,22 @@
+<% actions.each do |action| %>
+  <%# Render the action only if the specified condition is met %>
+  <% if action[:show_if].nil? || action[:show_if] %>
+    <% if action[:method] == :get %>
+      <%# Render a link_to for GET actions %>
+      <%= link_to action[:text], action[:path], class: "c-form__action #{action[:class]}", data: {
+          turbo: action[:data_turbo],
+          turbo_frame: action[:data_turbo_frame],
+          turbo_prefetch: action[:data_turbo_prefetch],
+          turbo_confirm: action[:data_turbo_confirm]
+        }.compact %>
+    <% else %>
+      <%# Render a button_to for non-GET actions %>
+      <%= button_to action[:text], action[:path], method: action[:method], class: "c-form__action #{action[:class]}", data: {
+          turbo: action[:data_turbo],
+          turbo_frame: action[:data_turbo_frame],
+          turbo_prefetch: action[:data_turbo_prefetch],
+          turbo_confirm: action[:data_turbo_confirm]
+        }.compact %>
+    <% end %>
+  <% end %>
+<% end %>
